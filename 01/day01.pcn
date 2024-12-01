@@ -1,0 +1,52 @@
+main()
+{
+    open_file("01/day01.input", "r", fd),
+    io:read_char_stream(fd, chars),
+    parse(chars, left, right),
+    map:keys(left, llist),
+    map:map_to_list(right, rlist),
+    part1(llist, rlist, ans1),
+    fmt:format("Part 1: ~d\n", [ans1]),
+    part2(llist, right, ans2),
+    fmt:format("Part 2: ~d\n", [ans2])
+}
+
+parse(in, left, right)
+{
+    if(in == []) { left = [], right = [] }
+    else {
+        scan:format("~d~s~d\n", [x,_,y], in, more),
+        parse(more, leftrec, rightrec),
+        mapupdate(x, leftrec, left),
+        mapupdate(y, rightrec, right),
+    }
+}
+
+mapupdate(x, map, map2)
+{
+    map:replace(x, new, old, map, map2),
+    if(old == []) new = 1
+    else new = old + 1,
+}
+
+part1(left, right, ans)
+{?
+    left ?= [] -> ans = 0,
+    left ?= [lk|lmore] -> {
+        let right ?= [{"-",rk,rv}|rmore],
+        nrv = rv-1,
+        if(nrv == 0) part1(lmore, rmore, ansrec)
+        else part1(lmore, [{"-",rk,nrv}|rmore], ansrec),
+        ans = ansrec + abs(lk-rk),
+    }
+}
+
+part2(left, right, ans)
+{?
+    left ?= [] -> ans = 0,
+    left ?= [key|more] -> {
+        part2(more, right, ansrec),
+        map:lookup(key, right, val, 0),
+        ans = ansrec + key * val,
+    }
+}
