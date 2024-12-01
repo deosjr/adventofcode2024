@@ -11,42 +11,49 @@ main()
     fmt:format("Part 2: ~d\n", [ans2])
 }
 
-parse(in, left, right)
-{
-    if(in == []) { left = [], right = [] }
+parse(in, left, right) { parse(in, [], left, [], right) }
+
+parse(in, left0, left, right0, right)
+{||
+    if(in == []) { left = left0, right = right0 }
     else {
         scan:format("~d~s~d\n", [x,_,y], in, more),
-        parse(more, leftrec, rightrec),
-        mapupdate(x, leftrec, left),
-        mapupdate(y, rightrec, right),
+        leftrec = mapupdate(x, left0),
+        rightrec = mapupdate(y, right0),
+        parse(more, leftrec, left, rightrec, right),
     }
 }
 
-mapupdate(x, map, map2)
+function mapupdate(x, map)
 {
     map:replace(x, new, old, map, map2),
     if(old == []) new = 1
     else new = old + 1,
+    return(map2)
 }
 
-part1(left, right, ans)
+part1(left, right, ans) { part1(left, right, 0, ans) }
+
+part1(left, right, ans0, ans)
 {?
-    left ?= [] -> ans = 0,
+    left ?= [] -> ans = ans0,
     left ?= [lk|lmore] -> {
         let right ?= [{"-",rk,rv}|rmore],
+        ansrec = ans0 + abs(lk-rk),
         nrv = rv-1,
-        if(nrv == 0) part1(lmore, rmore, ansrec)
-        else part1(lmore, [{"-",rk,nrv}|rmore], ansrec),
-        ans = ansrec + abs(lk-rk),
+        if(nrv == 0) part1(lmore, rmore, ansrec, ans)
+        else part1(lmore, [{"-",rk,nrv}|rmore], ansrec, ans),
     }
 }
 
-part2(left, right, ans)
+part2(left, right, ans) { part2(left, right, 0, ans) }
+
+part2(left, right, ans0, ans)
 {?
-    left ?= [] -> ans = 0,
+    left ?= [] -> ans = ans0,
     left ?= [key|more] -> {
-        part2(more, right, ansrec),
         map:lookup(key, right, val, 0),
-        ans = ansrec + key * val,
+        ansrec = ans0 + key * val,
+        part2(more, right, ansrec, ans),
     }
 }
