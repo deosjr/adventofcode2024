@@ -1,0 +1,70 @@
+main()
+{
+    open_file("02/day02.input", "r", fd),
+    io:read_lines(fd, lines),
+    app:maplist(``parse_nums``, lines, nums),
+    app:foldl(``p1``, nums, 0, ans1),
+    fmt:format("Part 1: ~d\n", [ans1]),
+}
+
+parse_nums(line, nums)
+{
+    list:split(line, ' ', s),
+    // because list_to_integer will otherwise not be found..
+    f = `(list, n) -> list_to_integer(list, n),
+    app:maplist(f, s, nums),
+}
+
+safe(nums, t)
+{
+    let nums ?= [x,y|r],
+    safe(x, y, 0, tt),
+    if(tt) violations = 0
+    else violations = 1,
+    d = x-y,
+    _safe([y|r], d, violations, t)
+}
+
+safe(x, y, dd, t)
+{
+    d = x-y,
+    constraint1(dd, d, t1),
+    constraint2(d, t2),
+    if(t1,t2) t = true
+    else t = false
+}
+
+constraint1(d, dd, t)
+{?
+    d >= 0, dd > 0 -> t = true,
+    d <= 0, dd < 0 -> t = true,
+    default -> t = false
+}
+
+constraint2(d, t)
+{
+    x = abs(d),
+    if(x > 0, x < 4) t = true
+    else t = false
+}
+
+_safe(list, d, v, t)
+{?
+    list ?= [_] -> {
+        if(v<1) t = true
+        else t = false
+    },
+    list ?= [x,y|r] -> {
+        safe(x, y, d, tt),
+        if(tt) vv = v
+        else vv = v+1,
+        _safe([y|r], d, vv, t)
+    }
+}
+
+p1(nums, prev, next)
+{
+    safe(nums, t),
+    if(t) next = prev+1
+    else next = prev
+}

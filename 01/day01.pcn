@@ -14,9 +14,9 @@ main()
 parse(in, left, right) { parse(in, [], left, [], right) }
 
 parse(in, left0, left, right0, right)
-{||
+{
     if(in == []) { left = left0, right = right0 }
-    else {
+    else {||
         scan:format("~d~s~d\n", [x,_,y], in, more),
         leftrec = mapupdate(x, left0),
         rightrec = mapupdate(y, right0),
