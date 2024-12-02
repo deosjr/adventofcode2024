@@ -5,6 +5,8 @@ main()
     app:maplist(``parse_nums``, lines, nums),
     app:foldl(``p1``, nums, 0, ans1),
     fmt:format("Part 1: ~d\n", [ans1]),
+    app:foldl(``p2``, nums, 0, ans2),
+    fmt:format("Part 2: ~d\n", [ans2]),
 }
 
 parse_nums(line, nums)
@@ -65,6 +67,26 @@ _safe(list, d, v, t)
 p1(nums, prev, next)
 {
     safe(nums, t),
+    if(t) next = prev+1
+    else next = prev
+}
+
+drop_one(list, n, out)
+{
+    list:take(n-1, list, prefix, []),
+    list:drop(n, list, suffix),
+    list:append(prefix, suffix, out),
+}
+
+permutations(list, perms)
+{
+    app:sequence(``drop_one(list)``, length(list), perms, []),
+}
+
+p2(nums, prev, next)
+{
+    permutations(nums, perms),
+    app:any(``safe``, perms, t),
     if(t) next = prev+1
     else next = prev
 }
