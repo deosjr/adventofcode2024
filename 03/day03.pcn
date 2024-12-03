@@ -1,0 +1,41 @@
+main()
+{
+    open_file("03/day03.input", "r", fd),
+    io:read_char_stream(fd, chars),
+    //s = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))",
+    //string_to_list(s, chars),
+    p1(chars, 0, ans1),
+    fmt:format("Part 1: ~d\n", [ans1]),
+}
+
+parse_mul(stream, rest, x, y)
+{?
+    stream ?= [] -> rest = false,
+    stream ?= [_|_] -> {
+        list:search(['m','u','l','('], stream, _, [], r1),
+        scan:integer(xn, r1, r2),
+        {?
+            r2 ?= [','|r3] -> {
+                scan:integer(yn, r3, r4),
+                {?
+                    r4 ?= [')'|rest] -> {
+                        list_to_integer(xn, x),
+                        list_to_integer(yn, y),
+                    },
+                    default -> parse_mul(r4, rest, x, y)
+                }
+            },
+            default -> parse_mul(r2, rest, x, y)
+        }
+    }
+}
+
+p1(stream, acc, sum)
+{
+    parse_mul(stream, rest, x, y),
+    if(rest == false) sum = acc
+    else {
+        nacc = acc + x*y,
+        p1(rest, nacc, sum)
+    }
+}
