@@ -2,10 +2,11 @@ main()
 {
     open_file("03/day03.input", "r", fd),
     io:read_char_stream(fd, chars),
-    //s = "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))",
-    //string_to_list(s, chars),
     p1(chars, 0, ans1),
     fmt:format("Part 1: ~d\n", [ans1]),
+    list:append(chars, ['m','u','l','(','d','o','(',')','d','o','n','\'','t','(',')'], chars2),
+    p2(chars2, true, 0, ans2),
+    fmt:format("Part 2: ~d\n", [ans2]),
 }
 
 parse_mul(stream, rest, x, y)
@@ -37,5 +38,33 @@ p1(stream, acc, sum)
     else {
         nacc = acc + x*y,
         p1(rest, nacc, sum)
+    }
+}
+
+p2(stream, do, acc, sum)
+{
+    list:search(['d','o','(',')'], stream, dopos),
+    list:search(['d','o','n','\'','t','(',')'], stream, dontpos),
+    parse_mul(stream, mulrest, x, y),
+    if(mulrest) mulpos = length(stream) - length(mulrest)
+    else mulpos = 0,
+    {?
+        dopos == 0, dontpos == 0, mulpos == 0 -> sum = acc,
+        dopos < dontpos, dopos < mulpos -> {
+            list:drop(dopos+3, stream, rest),
+            p2(rest, true, acc, sum)
+        },
+        dontpos < dopos, dontpos < mulpos -> {
+            list:drop(dontpos+5, stream, rest),
+            p2(rest, false, acc, sum)
+        },
+        mulpos < dopos, mulpos < dontpos -> {
+            if(mulrest == false) sum = acc
+            else {
+                if(do) nacc = acc + x*y
+                else nacc = acc,
+                p2(mulrest, do, nacc, sum)
+            }
+        }
     }
 }
