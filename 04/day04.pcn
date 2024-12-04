@@ -1,0 +1,65 @@
+-struct(coord(x, y))
+
+main()
+{
+    open_file("04/day04.input", "r", fd),
+    io:read_lines(fd, lines),
+    parse_lines(lines, 0, [], m),
+    map:keys(m, k),
+    p1(k, m, 0, ans1),
+    fmt:format("Part 1: ~d\n", [ans1]),
+    p2(k, m, 0, ans2),
+    fmt:format("Part 2: ~d\n", [ans2]),
+}
+
+parse_lines(lines, y, m0, m)
+{?
+    lines ?= [] -> m = m0,
+    lines ?= [h|t] -> {
+        parse_line(h, 0, y, m0, m1),
+        parse_lines(t, y+1, m1, m)
+    }
+}
+
+parse_line(line, x, y, m0, m)
+{?
+    line ?= [] -> m = m0,
+    line ?= [h|t] -> {
+        map:insert(coord(x,y), h, m0, m1),
+        parse_line(t, x+1, y, m1, m)
+    }
+}
+
+p1(keys, m, acc, ans)
+{?
+    keys ?= [] -> ans = acc,
+    keys ?= [k|more] -> {
+        map:lookup(k, m, v),
+        if(v=='X') xmas(k, m, acc, nacc)
+        else nacc = acc,
+        p1(more, m, nacc, ans)
+    }
+}
+
+xmas(c, m, acc, nacc)
+{
+    // TODO
+    nacc = acc+1,
+}
+
+p2(keys, m, acc, ans)
+{?
+    keys ?= [] -> ans = acc,
+    keys ?= [k|more] -> {
+        map:lookup(k, m, v),
+        if(v=='A') masx(k, m, acc, nacc)
+        else nacc = acc,
+        p1(more, m, nacc, ans)
+    }
+}
+
+masx(c, m, acc, nacc)
+{
+    // TODO
+    nacc = acc+1,
+}
