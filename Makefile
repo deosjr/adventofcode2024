@@ -1,6 +1,9 @@
 go1:
 	@go run 01/day01.go
 
+go4:
+	@go run 04/day04.go
+
 fleng1:
 	@fleng 01/day01.pcn -o out
 	@./out

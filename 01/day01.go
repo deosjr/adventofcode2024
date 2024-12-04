@@ -4,7 +4,7 @@ import (
     "slices"
     "strings"
 
-	"github.com/deosjr/adventofcode2022/lib"
+	"github.com/deosjr/adventofcode2024/lib"
 )
 
 func main() {
