@@ -11,6 +11,12 @@ main()
     app:maplist(``score(rules,[])``, updates, scores),
     app:foldl(`(a,b,c)->c=a+b, scores, 0, ans1),
     fmt:format("Part 1: ~d\n", [ans1]),
+    list:zip(updates, scores, zipped),
+    app:filter(`(p,t) -> if(p?={_,0}) t=true else t=false, zipped, filtered),
+    app:maplist(`(p,u) -> {? p ?= {u,_} -> {} }, filtered, incorrect),
+    app:maplist(``score2(rules)``, incorrect, scores2),
+    app:foldl(`(a,b,c)->c=a+b, scores2, 0, ans2),
+    fmt:format("Part 2: ~d\n", [ans2]),
 }
 
 parse_rule(raw, rule)
@@ -39,12 +45,39 @@ score(rules, pref, update, s)
     }
 }
 
+constraint(rules, n, p, t)
+{
+    list:member(rule(n,p), rules, t),
+}
+
 check(rules, pref, n, t)
 {?
     pref ?= [] -> t=true,
     pref ?= [p|more] -> {
-        list:member(rule(n,p), rules, tt),
-        if(tt) t=false
+        constraint(rules, n, p, broken),
+        if(broken) t=false
         else check(rules, more, n, t)
     }
+}
+
+score2(rules, update, s)
+{
+    sort(rules, update, [], sorted),
+    mid = length(sorted)/2 + 1,
+    list:nth(mid, sorted, s)
+}
+
+sort(rules, update, acc, sorted)
+{?
+    update ?= [] -> sorted = acc,
+    update ?= [u|more] -> {
+        insert(rules, u, acc, nacc),
+        sort(rules, more, nacc, sorted)
+    }
+}
+
+insert(rules, e, list, res)
+{
+    app:take(``constraint(rules, e)``, list, prefix, [], more),
+    list:append(prefix, [e|more], res)
 }
