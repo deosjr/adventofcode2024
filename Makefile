@@ -23,3 +23,8 @@ fleng4:
 	@fleng 04/day04.pcn -o out
 	@./out
 	@rm out
+
+fleng5:
+	@fleng 05/day05.pcn -o out
+	@./out
+	@rm out

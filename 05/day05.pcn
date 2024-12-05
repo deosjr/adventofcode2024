@@ -1,0 +1,50 @@
+-struct(rule(before,after))
+
+main()
+{
+    open_file("05/day05.input", "r", fd),
+    io:read_lines(fd, lines),
+    list:split(lines, [], split),
+    let split ?= [raw_rules, raw_updates],
+    app:maplist(``parse_rule``, raw_rules, rules),
+    app:maplist(``parse_update``, raw_updates, updates),
+    app:maplist(``score(rules,[])``, updates, scores),
+    app:foldl(`(a,b,c)->c=a+b, scores, 0, ans1),
+    fmt:format("Part 1: ~d\n", [ans1]),
+}
+
+parse_rule(raw, rule)
+{
+    scan:format("~d|~d", [x,y], raw, _),
+    rule = rule(x,y)
+}
+
+parse_update(raw, update)
+{
+    list:split(raw, ',', pagenums),
+    f = `(list, n) -> list_to_integer(list, n),
+    app:maplist(f, pagenums, update)
+}
+
+score(rules, pref, update, s)
+{?
+    update ?= [] -> {
+        mid = length(pref)/2 + 1,
+        list:nth(mid, pref, s)
+    },
+    update ?= [n|more] -> {
+        check(rules, pref, n, t),
+        if(t) score(rules, [n|pref], more, s)
+        else s=0
+    }
+}
+
+check(rules, pref, n, t)
+{?
+    pref ?= [] -> t=true,
+    pref ?= [p|more] -> {
+        list:member(rule(n,p), rules, tt),
+        if(tt) t=false
+        else check(rules, more, n, t)
+    }
+}
