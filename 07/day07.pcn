@@ -1,0 +1,49 @@
+main()
+{
+    open_file("07/day07.input", "r", fd),
+    io:read_lines(fd, lines),
+    app:maplist(``parse_line``, lines, equations),
+    app:foldl(``p1``, equations, 0, ans1),
+    fmt:format("Part 1: ~d\n", [ans1]),
+}
+
+parse_line(line, eq)
+{
+    list:delete(':', line, nocolon),
+    list:split(nocolon, ' ', split),
+    f = `(x,y) -> list_to_integer(x,y),
+    app:maplist(f, split, eq),
+}
+
+p1(eq, prev, next)
+{
+    let eq ?= [test, first|nums],
+    calibrate(test, nums, first, v),
+    next = prev + v
+}
+
+calibrate(test, eq, n, v)
+{?
+    eq ?= [] -> {
+        if(test == n) v = test
+        else v = 0
+    },
+    eq ?= [e|more] -> {
+        plus = n + e,
+        times = n * e,
+        {?
+            plus == test -> v = test,
+            times == test -> v = test,
+            plus > test, times > test -> v = 0,
+            plus > test, times < test -> calibrate(test, more, times, v),
+            plus < test, times > test -> calibrate(test, more, plus, v),
+            plus < test, times < test -> {
+                calibrate(test, more, plus, p),
+                calibrate(test, more, times, t),
+                if(p==test) v = test
+                else if(t==test) v = test
+                else v = 0
+            },
+        }
+    }
+}
