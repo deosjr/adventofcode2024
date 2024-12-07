@@ -1,10 +1,13 @@
 main()
 {
     open_file("07/day07.input", "r", fd),
+    //open_file("test", "r", fd),
     io:read_lines(fd, lines),
     app:maplist(``parse_line``, lines, equations),
     app:foldl(``p1``, equations, 0, ans1),
     fmt:format("Part 1: ~d\n", [ans1]),
+    app:foldl(``p2``, equations, 0, ans2),
+    fmt:format("Part 2: ~d\n", [ans2]),
 }
 
 parse_line(line, eq)
@@ -31,19 +34,69 @@ calibrate(test, eq, n, v)
     eq ?= [e|more] -> {
         plus = n + e,
         times = n * e,
-        {?
-            plus == test -> v = test,
-            times == test -> v = test,
-            plus > test, times > test -> v = 0,
-            plus > test, times < test -> calibrate(test, more, times, v),
-            plus < test, times > test -> calibrate(test, more, plus, v),
-            plus < test, times < test -> {
-                calibrate(test, more, plus, p),
-                calibrate(test, more, times, t),
-                if(p==test) v = test
-                else if(t==test) v = test
-                else v = 0
-            },
+        if(plus > test) p = 0
+        else calibrate(test, more, plus, p),
+        if(times > test) t = 0
+        else calibrate(test, more, times, t),
+        if(p==test) v = test
+        else if(t==test) v = test
+        else v = 0
+    }
+}
+
+p2(eq, prev, next)
+{
+    let eq ?= [test, first|nums],
+    calibrate2(test, nums, first, v),
+    next = prev + v
+}
+
+/*
+// we only have natural log/exp...
+concat(x, y, z)
+{
+    {?
+        // todo: exact factors are a problem
+        y == 0 -> factor = 10,
+        y == 1 -> factor = 10,
+        y == 10 -> factor = 100,
+        y == 100 -> factor = 1000,
+        y != 1 -> {
+            size = ceiling(log(y)/log(10)),
+            factor = exp(size * log(10)),
         }
+    },
+    z = integer(x * factor + y),
+}
+*/
+
+concat(x, y, z)
+{
+    number_to_list(x, xl, []),
+    number_to_list(y, yl, []),
+    list:append(xl, yl, zl),
+    list_to_number(zl, z)
+}
+
+calibrate2(test, eq, n, v)
+{?
+    eq ?= [] -> {
+        if(test == n) v = test
+        else v = 0
+    },
+    eq ?= [e|more] -> {
+        plus = n + e,
+        times = n * e,
+        concat(n, e, conc),
+        if(plus > test) p=0
+        else calibrate2(test, more, plus, p),
+        if(times > test) t=0
+        else calibrate2(test, more, times, t),
+        if(conc > test) c=0
+        else calibrate2(test, more, conc, c),
+        if(p==test) v = test
+        else if(t==test) v = test
+        else if(c==test) v = test
+        else v = 0
     }
 }
