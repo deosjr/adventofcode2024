@@ -47,5 +47,30 @@ func main() {
         }
     }
     lib.WritePart1("%d", len(antinodes))
-    //lib.WritePart2("%d", p2(start))
+    for _, pos := range antennae {
+        for i:=0; i<len(pos); i++ {
+            for j:=i+1; j<len(pos); j++ {
+                x, y := pos[i], pos[j]
+                antinodes[x] = struct{}{}
+                antinodes[y] = struct{}{}
+                c1 := x.sub(y)
+                c2 := y.sub(x)
+                for {
+                    x = x.add(c1)
+                    if _, ok := m[x]; !ok {
+                        break
+                    }
+                    antinodes[x] = struct{}{}
+                }
+                for {
+                    y = y.add(c2)
+                    if _, ok := m[y]; !ok {
+                        break
+                    }
+                    antinodes[y] = struct{}{}
+                }
+            }
+        }
+    }
+    lib.WritePart2("%d", len(antinodes))
 }
