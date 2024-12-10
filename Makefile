@@ -16,6 +16,9 @@ go8:
 go9:
 	@go run 09/day09.go
 
+go10:
+	@go run 10/day10.go
+
 fleng1:
 	@fleng 01/day01.pcn -o out
 	@./out
