@@ -26,11 +26,18 @@ func main() {
         }
         y++
     })
-    ans1 := 0
+    ans1, ans2 := 0, 0
     for _, t := range trailheads {
-        ans1 += len(reachable(t, 0))
+        nines := reachable(t, 0)
+        dedup := map[coord]struct{}{}
+        for _, k := range nines {
+            dedup[k] = struct{}{}
+        }
+        ans1 += len(dedup)
+        ans2 += len(nines)
     }
     lib.WritePart1("%d", ans1)
+    lib.WritePart2("%d", ans2)
 }
 
 var mem = map[coord][]coord{}
@@ -39,7 +46,7 @@ func reachable(c coord, value int) []coord {
     if v, ok := mem[c]; ok {
         return v
     }
-    next := map[coord]struct{}{}
+    list := []coord{}
     for _, n := range []coord{
         c.add(coord{-1,0}), c.add(coord{1,0}), c.add(coord{0,-1}), c.add(coord{0,1}),
     }{
@@ -47,16 +54,10 @@ func reachable(c coord, value int) []coord {
             continue
         }
         if value == 8 {
-            next[n] = struct{}{}
+            list = append(list, n)
         } else {
-            for _, r := range reachable(n, value+1) {
-                next[r] = struct{}{}
-            }
+            list = append(list, reachable(n, value+1)...)
         }
-    }
-    list := []coord{}
-    for k := range next {
-        list = append(list, k)
     }
     mem[c] = list
     return list
