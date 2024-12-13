@@ -28,6 +28,9 @@ go12:
 go13:
 	@go run 13/day13.go
 
+prolog13:
+	@swipl -q -l 13/day13.pl -t run
+
 fleng1:
 	@fleng 01/day01.pcn -o out
 	@./out
