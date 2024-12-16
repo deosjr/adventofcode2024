@@ -1,0 +1,4 @@
+github.com/aquilax/go-perlin v1.0.0 h1:7KBttX3KwqipwhmIVE/B2cEZVYiOZpoE/q8HsS6HBoQ=
+github.com/aquilax/go-perlin v1.0.0/go.mod h1:z9Rl7EM4BZY0Ikp2fEN1I5mKSOJ26HQpk0O2TBdN2HE=
+github.com/deosjr/Pathfinding v0.0.0-20231217104517-3518860fb9f9 h1:HeUGd4sFhlsSsUoVVZCQobDMeNPAIdknoqgeNFIQ3WY=
+github.com/deosjr/Pathfinding v0.0.0-20231217104517-3518860fb9f9/go.mod h1:lhnvg6bNJnaJhlA/mzD4QbkUwF4twGjmmKJNBb5cRc8=
