@@ -73,13 +73,57 @@ func main() {
         y++
     })
     start := node{pos:startpos, heading: coord{1,0}}
-    end := node{pos:endpos}
-    route, err := path.FindRouteWithGoalFunc[node](m, start, end, func(c, g node) bool {
-        return c.pos == g.pos
-    })
-    if err != nil {
-        panic(err)
+    route := findRoute(m, start, endpos)
+    lib.WritePart1("%d", score(m, route))
+
+    // this should be reusing way more of A* but I'm not editing the lib right now
+    toCheck := []node{}
+    best := map[node]struct{}{}
+    for i:=len(route)-1; i>1; i-- {
+        toCheck = append(toCheck, route[i])
+        best[route[i]] = struct{}{}
     }
+    checked := map[node]struct{}{}
+    for len(toCheck) > 0 {
+        check := toCheck[0]
+        toCheck = toCheck[1:]
+        canonical := findRoute(m, check, endpos)
+        if len(canonical) == 0 {
+            continue
+        }
+        canonicalsum := score(m, canonical)
+        for _, n := range m.Neighbours(check) {
+            if _, ok := best[n]; ok {
+                continue
+            }
+            if _, ok := checked[n]; ok {
+                continue
+            }
+            checked[n] = struct{}{}
+            newroute := findRoute(m, n, endpos)
+            if newroute == nil {
+                continue
+            }
+            if score(m, newroute) + int(m.G(check, n)) > canonicalsum {
+                continue
+            }
+            for _, newnode := range newroute {
+                best[newnode] = struct{}{}
+                if _, ok := checked[newnode]; ok {
+                    continue
+                }
+                toCheck = append(toCheck, newnode)
+            }
+        }
+    }
+    unique := map[coord]struct{}{}
+    for k := range best {
+        unique[k.pos] = struct{}{}
+    }
+    lib.WritePart2("%d", len(unique))
+}
+
+func score(m maze, route []node) int {
     sum := 0
     curr := route[len(route)-1]
     for i:=len(route)-2; i>0; i-- {
@@ -87,5 +131,16 @@ func main() {
         sum += int(m.G(curr, next))
         curr = next
     }
-    lib.WritePart1("%d", sum)
+    return sum
+}
+
+func findRoute(m maze, start node, endpos coord) []node {
+    end := node{pos:endpos}
+    route, err := path.FindRouteWithGoalFunc[node](m, start, end, func(c, g node) bool {
+        return c.pos == g.pos
+    })
+    if err != nil {
+        return nil
+    }
+    return route
 }
