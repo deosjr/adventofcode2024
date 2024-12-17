@@ -2,7 +2,6 @@ package main
 
 import (
     "fmt"
-    "math"
     "strings"
 
     "github.com/deosjr/adventofcode2024/lib"
@@ -47,7 +46,7 @@ func (c *computer) combo(x uint8) int64 {
 
 func (c *computer) adv() {
     denom := c.combo(c.program[c.ip+1])
-    c.a = c.a / int64(math.Exp2(float64(denom)))
+    c.a = c.a >> denom
 }
 
 func (c *computer) bxl() {
@@ -75,12 +74,12 @@ func (c *computer) out() {
 
 func (c *computer) bdv() {
     denom := c.combo(c.program[c.ip+1])
-    c.b = c.a / int64(math.Exp2(float64(denom)))
+    c.b = c.a >> denom
 }
 
 func (c *computer) cdv() {
     denom := c.combo(c.program[c.ip+1])
-    c.c = c.a / int64(math.Exp2(float64(denom)))
+    c.c = c.a >> denom
 }
 
 func main() {
@@ -101,4 +100,38 @@ func main() {
         s[i] = fmt.Sprintf("%d", n)
     }
     lib.WritePart1("%s", strings.Join(s, ",")) 
+
+    candidates := [][]uint8{{}}
+    for len(candidates) > 0 {
+        newc := candidates[0]
+        if len(newc) == 16 {
+            break
+        }
+        candidates = candidates[1:]
+        var sofar int64
+        for i, n := range newc {
+            sofar += int64(n) << ((len(newc)-i)*3)
+        }
+        for i:=0; i<8; i++ {
+            newa := sofar + int64(i)
+            comp := &computer{a:newa, b:b, c:c, program:program}
+            out := comp.run()
+            if len(out) != len(newc)+1 {
+                continue
+            }
+            if out[0] == program[len(program)-(len(newc)+1)] {
+                newcc := make([]uint8, len(newc)+1)
+                for i, n := range newc {
+                    newcc[i] = n
+                }
+                newcc[len(newc)] = uint8(i)
+                candidates = append(candidates, newcc)
+            }
+        }
+    }
+    var sum int64
+    for i, n := range candidates[0] {
+        sum += int64(n) << ((16-i-1)*3)
+    }
+    lib.WritePart2("%d", sum)
 }
