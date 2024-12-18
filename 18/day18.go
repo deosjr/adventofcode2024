@@ -71,4 +71,13 @@ func main() {
         panic(err)
     }
     lib.WritePart1("%d", len(route)-2)
+
+    for i:=1024; i<len(coords); i++ {
+        m.grid[coords[i]] = true
+        _, err := path.FindRoute[coord](m, start, end)
+        if err != nil {
+            lib.WritePart2("%d,%d", coords[i].x, coords[i].y)
+            break
+        }
+    }
 }
