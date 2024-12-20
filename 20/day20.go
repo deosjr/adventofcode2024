@@ -86,4 +86,30 @@ func main() {
         }
     }
     lib.WritePart1("%d", p1)
+    fills := []coord{}
+    for k := range fill {
+        fills = append(fills, k)
+    }
+    p2 := 0
+    for i:=0; i<len(fills); i++ {
+        for j:=i+1; j<len(fills); j++ {
+            p, q := fills[i], fills[j]
+            dist := manhattan(p, q)
+            if dist > 20 {
+                continue
+            }
+            score1, score2 := fill[p], fill[q]
+            abs := int(math.Abs(float64(score1)-float64(score2))) - dist
+            if abs >= 100 {
+                p2++
+            }
+        }
+    }
+    lib.WritePart2("%d", p2)
+}
+
+func manhattan(p, q coord) int {
+    dx := int(math.Abs(float64(p.x)-float64(q.x)))
+    dy := int(math.Abs(float64(p.y)-float64(q.y)))
+    return dx + dy
 }
