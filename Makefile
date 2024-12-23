@@ -52,6 +52,9 @@ go21:
 go22:
 	@go run 22/day22.go
 
+go23:
+	@go run 23/day23.go
+
 prolog13:
 	@swipl -q -l 13/day13.pl -t run
 
